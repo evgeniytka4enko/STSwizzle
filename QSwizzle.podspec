@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "QSwizzle"
-  s.version      = "0.2.1"
+  s.version      = "0.2.2"
   s.summary      = "Several Swizzle methods on a NSObject category."
   s.description  = <<-DESC
                     STSwizzle add several methods on NSObject.

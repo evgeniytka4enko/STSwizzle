@@ -100,7 +100,7 @@ static char isSwizzledKey;
 	
 	NSNumber* isSwizzled = (NSNumber*)objc_getAssociatedObject(self, &isSwizzledKey);
 	
-	if (isSwizzled != nil && ![isSwizzled boolValue])
+	if (!isSwizzled || ![isSwizzled boolValue])
 	{
 		Class hackClass = objc_allocateClassPair([self class], [newSelectorName UTF8String], 0);
 		if (hackClass)
