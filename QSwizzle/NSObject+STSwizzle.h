@@ -108,6 +108,8 @@ typedef id implementation_block;
  */
 - (void)replaceMethodForSelector:(SEL)selector implementation:(implementation_block)impl;
 
+- (void)replaceMethodForSelector:(SEL)selector orAddWithTypes:(char*)types implementation:(implementation_block)impl;
+
 /*
  *	@brief	Method to call the original implementation when you replace the implementation for a selector
  *          Warning: If the method is called during the block execution, only the original implementation will be called !

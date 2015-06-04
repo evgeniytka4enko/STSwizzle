@@ -161,6 +161,17 @@ static char isSwizzledKey;
 	}
 }
 
+- (void)replaceMethodForSelector:(SEL)selector orAddWithTypes:(char*)types implementation:(implementation_block)impl {
+  Method origMethod = class_getInstanceMethod([self class], selector);
+
+  if (origMethod) {
+    [self replaceMethodForSelector:selector implementation: impl];
+  }
+  else {
+    [self addMethodForSelector:(SEL)selector types:types implementation: impl];
+  }
+}
+
 - (void)callOnSuper:(dispatch_block_t)block
 {
 	Class cls = [self class];
