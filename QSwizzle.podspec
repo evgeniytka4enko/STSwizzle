@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://code.qwasi.com/scm/osrc/stswizzle.git", :tag => s.version.to_s }
   s.platform     = :ios, '5.0'
 
-  s.source_files = 'STSwizzle/*.{h,m}'
+  s.source_files = 'STSwizzle/**/*.{h,m}'
 
   s.framework  = 'Foundation'
   s.requires_arc = true
