@@ -96,16 +96,11 @@ static char isSwizzledKey;
 
 - (BOOL)setHackClass
 {
-#if !defined(DEBUG)
-	[NSException raise:@"STSwizzleException" format:@"Attempting to swizzle an object whithout being in debug."];
-	return NO;
-#endif
-	
 	NSString* newSelectorName = [NSString stringWithFormat:@"%@-%p", NSStringFromClass([self class]), self];
 	
 	NSNumber* isSwizzled = (NSNumber*)objc_getAssociatedObject(self, &isSwizzledKey);
 	
-	if (!isSwizzled || ![isSwizzled boolValue])
+	if (isSwizzled != nil && ![isSwizzled boolValue])
 	{
 		Class hackClass = objc_allocateClassPair([self class], [newSelectorName UTF8String], 0);
 		if (hackClass)
