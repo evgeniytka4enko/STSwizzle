@@ -36,62 +36,62 @@
 
 static char isSwizzledKey;
 
-+ (void)swizzleMethod:(Method)firstMethod withMethod:(Method)secondMethod inClass:(Class)secondClass
++ (void)swizzleMethod:(Method)firstMethod withMethod:(Method)secondMethod inClass:(Class)class inSecondClass:(Class)secondClass
 {
-	if (firstMethod == NULL || secondMethod == NULL)
-	{
-		//At least one method is missing
-		[NSException raise:@"STSwizzleException" format:@"Attempting to swizzle an inexistant method."];
-		return;
-	}
-	
-	SEL firstSelector = method_getName(firstMethod);
-	SEL secondSelector = method_getName(secondMethod);
+    if (firstMethod == NULL || secondMethod == NULL)
+    {
+        //At least one method is missing
+        [NSException raise:@"STSwizzleException" format:@"Attempting to swizzle an inexistant method."];
+        return;
+    }
     
-	BOOL firstWasInChild = !class_addMethod(self, firstSelector, method_getImplementation(secondMethod), method_getTypeEncoding(secondMethod));
-	BOOL secondWasInChild = !class_addMethod(secondClass, secondSelector, method_getImplementation(firstMethod), method_getTypeEncoding(firstMethod));
-	
-	if (secondWasInChild && !firstWasInChild)
-	{
-		//Only new method was in child
-		class_replaceMethod(secondClass, secondSelector, method_getImplementation(firstMethod), method_getTypeEncoding(firstMethod));
-	}
-	else if (!secondWasInChild && firstWasInChild)
-	{
-		//Only old method was in child
-		class_replaceMethod(self, firstSelector, method_getImplementation(secondMethod), method_getTypeEncoding(secondMethod));
-	}
-	else if (secondWasInChild && firstWasInChild)
-	{
-		//both methods were present in child
-		method_exchangeImplementations(firstMethod, secondMethod);
-	}
+    SEL firstSelector = method_getName(firstMethod);
+    SEL secondSelector = method_getName(secondMethod);
+    
+    BOOL firstWasInChild = !class_addMethod(class, firstSelector, method_getImplementation(secondMethod), method_getTypeEncoding(secondMethod));
+    BOOL secondWasInChild = !class_addMethod(secondClass, secondSelector, method_getImplementation(firstMethod), method_getTypeEncoding(firstMethod));
+    
+    if (secondWasInChild && !firstWasInChild)
+    {
+        //Only new method was in child
+        class_replaceMethod(secondClass, secondSelector, method_getImplementation(firstMethod), method_getTypeEncoding(firstMethod));
+    }
+    else if (!secondWasInChild && firstWasInChild)
+    {
+        //Only old method was in child
+        class_replaceMethod(class, firstSelector, method_getImplementation(secondMethod), method_getTypeEncoding(secondMethod));
+    }
+    else if (secondWasInChild && firstWasInChild)
+    {
+        //both methods were present in child
+        method_exchangeImplementations(firstMethod, secondMethod);
+    }
 }
 
 + (void)swizzleInstanceMethod:(SEL)firstSelector withMethod:(SEL)secondSelector
 {
-	[self swizzleInstanceMethod:firstSelector withMethod:secondSelector inClass:self];
+    [self swizzleInstanceMethod:firstSelector withMethod:secondSelector inClass:self];
 }
 
 + (void)swizzleInstanceMethod:(SEL)firstSelector withMethod:(SEL)secondSelector inClass:(Class)c
 {
-	Method firstMethod = class_getInstanceMethod(self, firstSelector);
+    Method firstMethod = class_getInstanceMethod(self, firstSelector);
     Method secondMethod = class_getInstanceMethod(c, secondSelector);
-	
-	[self swizzleMethod:firstMethod withMethod:secondMethod inClass:c];
+    
+    [self swizzleMethod:firstMethod withMethod:secondMethod inClass:self inSecondClass:c];
 }
 
 + (void)swizzleClassMethod:(SEL)firstSelector withMethod:(SEL)secondSelector
 {
-	[self swizzleClassMethod:firstSelector withMethod:secondSelector inClass:self];
+    [self swizzleClassMethod:firstSelector withMethod:secondSelector inClass:object_getClass(self)];
 }
 
 + (void)swizzleClassMethod:(SEL)firstSelector withMethod:(SEL)secondSelector inClass:(Class)c
 {
-	Method firstMethod = class_getClassMethod(self, firstSelector);
+    Method firstMethod = class_getClassMethod(object_getClass(self), firstSelector);
     Method secondMethod = class_getClassMethod(c, secondSelector);
-	
-	[self swizzleMethod:firstMethod withMethod:secondMethod inClass:c];
+    
+    [self swizzleMethod:firstMethod withMethod:secondMethod inClass:object_getClass(self) inSecondClass:c];
 }
 
 - (BOOL)setHackClass
